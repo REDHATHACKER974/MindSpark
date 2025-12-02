@@ -1,3 +1,4 @@
+
 // Bot Identifiers
 export enum BotType {
   DoubtBuster = 'doubt-buster',
@@ -7,6 +8,8 @@ export enum BotType {
   TransBot = 'trans-bot',
   ReportGenerator = 'report-generator',
   DocuMind = 'docu-mind',
+  PixelCanvas = 'pixel-canvas',
+  FlashMind = 'flash-mind',
 }
 
 // Data structures for GraphGenie
@@ -34,6 +37,17 @@ export interface QuizQuestion {
 export interface Quiz {
   title: string;
   questions: QuizQuestion[];
+}
+
+// Data structures for FlashMind
+export interface Flashcard {
+  question: string;
+  answer: string;
+}
+
+export interface FlashcardSet {
+  topic: string;
+  cards: Flashcard[];
 }
 
 // Task Master

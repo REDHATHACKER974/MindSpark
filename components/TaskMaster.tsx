@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Calendar as CalendarIcon, CheckSquare, Plus, Trash2, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+
+import React, { useState, useEffect } from 'react';
+import { Calendar as CalendarIcon, CheckSquare, Plus, Trash2, ChevronLeft, ChevronRight, Filter, Timer, Play, Pause, RotateCcw } from 'lucide-react';
 import { Task, TaskCategory, GamificationProps } from '../types';
 
 const CATEGORIES: TaskCategory[] = ['Study', 'Personal', 'Work', 'Other'];
@@ -21,6 +22,45 @@ const TaskMaster: React.FC<GamificationProps> = ({ onReward }) => {
   const [newCategory, setNewCategory] = useState<TaskCategory>('Study');
   const [filter, setFilter] = useState<TaskCategory | 'All'>('All');
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Focus Flow State
+  const [timerActive, setTimerActive] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [mode, setMode] = useState<'Focus' | 'Break'>('Focus');
+
+  useEffect(() => {
+    let interval: number;
+    if (timerActive && timeLeft > 0) {
+      interval = window.setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && timerActive) {
+      setTimerActive(false);
+      // Play sound or notify
+      if (mode === 'Focus') {
+          onReward(50, "Focus Session Complete! +50 XP");
+          setMode('Break');
+          setTimeLeft(5 * 60);
+      } else {
+          setMode('Focus');
+          setTimeLeft(25 * 60);
+      }
+    }
+    return () => clearInterval(interval);
+  }, [timerActive, timeLeft, mode, onReward]);
+
+  const toggleTimer = () => setTimerActive(!timerActive);
+  const resetTimer = () => {
+    setTimerActive(false);
+    setMode('Focus');
+    setTimeLeft(25 * 60);
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const addTask = () => {
     if (!newTask.trim()) return;
@@ -64,9 +104,9 @@ const TaskMaster: React.FC<GamificationProps> = ({ onReward }) => {
   const nextMonth = () => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full overflow-y-auto">
-      {/* Task List */}
-      <div className="dark:bg-slate-800 bg-white rounded-xl border dark:border-slate-700 border-slate-200 p-6 flex flex-col min-h-[500px]">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full overflow-y-auto">
+      {/* Task List (Left 2 cols) */}
+      <div className="lg:col-span-2 dark:bg-slate-800 bg-white rounded-xl border dark:border-slate-700 border-slate-200 p-6 flex flex-col min-h-[500px]">
         <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-6 flex items-center gap-2">
             <CheckSquare className="text-emerald-500" />
             Checklist
@@ -160,53 +200,88 @@ const TaskMaster: React.FC<GamificationProps> = ({ onReward }) => {
         </div>
       </div>
 
-      {/* Calendar */}
-      <div className="dark:bg-slate-800 bg-white rounded-xl border dark:border-slate-700 border-slate-200 p-6 flex flex-col">
-        <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-6 flex items-center gap-2">
-            <CalendarIcon className="text-orange-500" />
-            Calendar
-        </h2>
+      {/* Sidebar (Right Col): Focus Flow & Calendar */}
+      <div className="flex flex-col gap-6">
+        
+        {/* Focus Flow Timer */}
+        <div className="dark:bg-slate-800 bg-white rounded-xl border dark:border-slate-700 border-slate-200 p-6 relative overflow-hidden">
+            <div className={`absolute top-0 left-0 w-full h-1 ${timerActive ? 'animate-linear-progress bg-red-500' : 'bg-transparent'}`}></div>
+            <h2 className="text-xl font-bold dark:text-white text-slate-900 mb-4 flex items-center gap-2">
+                <Timer className="text-red-500" />
+                Focus Flow
+            </h2>
+            
+            <div className="flex flex-col items-center justify-center mb-6">
+                <div className={`text-5xl font-mono font-bold mb-2 ${timerActive ? 'text-red-500' : 'dark:text-slate-200 text-slate-800'}`}>
+                    {formatTime(timeLeft)}
+                </div>
+                <span className={`text-sm uppercase tracking-widest font-semibold ${mode === 'Focus' ? 'text-slate-500' : 'text-emerald-500'}`}>
+                    {mode} Mode
+                </span>
+            </div>
 
-        <div className="flex justify-between items-center mb-6">
-            <button onClick={prevMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"><ChevronLeft className="dark:text-slate-300 text-slate-600" /></button>
-            <h3 className="text-lg font-bold dark:text-white text-slate-800">{monthName} {currentDate.getFullYear()}</h3>
-            <button onClick={nextMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"><ChevronRight className="dark:text-slate-300 text-slate-600" /></button>
+            <div className="flex justify-center gap-4">
+                <button 
+                    onClick={toggleTimer}
+                    className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold text-white transition-all transform hover:scale-105 ${timerActive ? 'bg-amber-500 hover:bg-amber-600' : 'bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30'}`}
+                >
+                    {timerActive ? <Pause size={18} /> : <Play size={18} />}
+                    {timerActive ? 'Pause' : 'Start'}
+                </button>
+                <button 
+                    onClick={resetTimer}
+                    className="p-2 rounded-full dark:bg-slate-700 bg-slate-100 text-slate-500 hover:text-red-500 transition-colors"
+                >
+                    <RotateCcw size={20} />
+                </button>
+            </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-2 text-center mb-2">
-            {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(d => (
-                <div key={d} className="text-xs font-bold text-slate-400 uppercase">{d}</div>
-            ))}
-        </div>
+        {/* Calendar */}
+        <div className="dark:bg-slate-800 bg-white rounded-xl border dark:border-slate-700 border-slate-200 p-6 flex flex-col flex-1">
+            <h2 className="text-xl font-bold dark:text-white text-slate-900 mb-4 flex items-center gap-2">
+                <CalendarIcon className="text-orange-500" />
+                Calendar
+            </h2>
 
-        <div className="grid grid-cols-7 gap-2 flex-1">
-             {/* Empty placeholders for start of month */}
-            {[...Array(firstDayOfMonth)].map((_, i) => (
-                <div key={`empty-${i}`} className="p-2"></div>
-            ))}
-            {/* Days */}
-            {[...Array(daysInMonth)].map((_, i) => {
-                const day = i + 1;
-                const isToday = new Date().getDate() === day && new Date().getMonth() === currentDate.getMonth();
-                
-                // Check if any tasks exist for this day (simplified check)
-                const hasTask = tasks.some(t => {
-                  const tDate = new Date(t.date || '');
-                  return tDate.getDate() === day && tDate.getMonth() === currentDate.getMonth() && !t.completed;
-                });
+            <div className="flex justify-between items-center mb-4">
+                <button onClick={prevMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"><ChevronLeft className="dark:text-slate-300 text-slate-600" size={16} /></button>
+                <h3 className="text-md font-bold dark:text-white text-slate-800">{monthName} {currentDate.getFullYear()}</h3>
+                <button onClick={nextMonth} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"><ChevronRight className="dark:text-slate-300 text-slate-600" size={16} /></button>
+            </div>
 
-                return (
-                    <div 
-                        key={day} 
-                        className={`aspect-square flex flex-col items-center justify-center rounded-lg text-sm cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 relative ${isToday ? 'bg-orange-600 text-white font-bold' : 'dark:bg-slate-900/30 bg-slate-50 dark:text-slate-300 text-slate-700'}`}
-                    >
-                        {day}
-                        {hasTask && !isToday && (
-                          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-1"></div>
-                        )}
-                    </div>
-                );
-            })}
+            <div className="grid grid-cols-7 gap-1 text-center mb-2">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
+                    <div key={d} className="text-xs font-bold text-slate-400">{d}</div>
+                ))}
+            </div>
+
+            <div className="grid grid-cols-7 gap-1 flex-1">
+                {[...Array(firstDayOfMonth)].map((_, i) => (
+                    <div key={`empty-${i}`} className="p-1"></div>
+                ))}
+                {[...Array(daysInMonth)].map((_, i) => {
+                    const day = i + 1;
+                    const isToday = new Date().getDate() === day && new Date().getMonth() === currentDate.getMonth();
+                    
+                    const hasTask = tasks.some(t => {
+                    const tDate = new Date(t.date || '');
+                    return tDate.getDate() === day && tDate.getMonth() === currentDate.getMonth() && !t.completed;
+                    });
+
+                    return (
+                        <div 
+                            key={day} 
+                            className={`aspect-square flex flex-col items-center justify-center rounded-lg text-xs cursor-pointer transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 relative ${isToday ? 'bg-orange-600 text-white font-bold' : 'dark:bg-slate-900/30 bg-slate-50 dark:text-slate-300 text-slate-700'}`}
+                        >
+                            {day}
+                            {hasTask && !isToday && (
+                            <div className="w-1 h-1 bg-emerald-500 rounded-full mt-0.5"></div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
         </div>
       </div>
     </div>

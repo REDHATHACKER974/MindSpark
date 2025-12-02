@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Home,
@@ -21,7 +22,9 @@ import {
   MapPin,
   FileSearch,
   Trophy,
-  Zap
+  Zap,
+  Image as ImageIcon,
+  Layers
 } from 'lucide-react';
 import { BotType, UserStats } from './types';
 import { BotCard } from './components/BotCard';
@@ -34,6 +37,8 @@ import EchoVoice from './components/bots/EchoVoice';
 import TransBot from './components/bots/TransBot';
 import ReportGenerator from './components/bots/ReportGenerator';
 import DocuMind from './components/bots/DocuMind';
+import PixelCanvas from './components/bots/PixelCanvas';
+import FlashMind from './components/bots/FlashMind';
 
 // Features
 import StudyNexus from './components/StudyNexus';
@@ -98,6 +103,8 @@ const App: React.FC = () => {
       case BotType.TransBot: return <TransBot />;
       case BotType.ReportGenerator: return <ReportGenerator />;
       case BotType.DocuMind: return <DocuMind />;
+      case BotType.PixelCanvas: return <PixelCanvas />;
+      case BotType.FlashMind: return <FlashMind />;
       default: return null;
     }
   };
@@ -203,6 +210,22 @@ const App: React.FC = () => {
           onClick={() => { setActiveBot(BotType.DocuMind); setCurrentView(View.BotActive); }}
         />
         <BotCard 
+          id={BotType.PixelCanvas}
+          title="PixelCanvas"
+          description="Generate educational diagrams, historical scenes, or scientific illustrations."
+          icon={ImageIcon}
+          color="pink"
+          onClick={() => { setActiveBot(BotType.PixelCanvas); setCurrentView(View.BotActive); }}
+        />
+        <BotCard 
+          id={BotType.FlashMind}
+          title="FlashMind"
+          description="Create AI-powered flashcard sets for active recall on any study topic."
+          icon={Layers}
+          color="teal"
+          onClick={() => { setActiveBot(BotType.FlashMind); setCurrentView(View.BotActive); }}
+        />
+        <BotCard 
           id={BotType.QuizAce}
           title="QuizAce"
           description="Test your knowledge with AI-generated interactive quizzes on any topic."
@@ -223,7 +246,7 @@ const App: React.FC = () => {
           title="EchoVoice"
           description="Convert text into natural-sounding speech for accessibility or learning."
           icon={Mic}
-          color="pink"
+          color="red"
           onClick={() => { setActiveBot(BotType.EchoVoice); setCurrentView(View.BotActive); }}
         />
         <BotCard 
