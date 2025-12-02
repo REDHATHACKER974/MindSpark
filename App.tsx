@@ -8,7 +8,6 @@ import {
   Mic, 
   Languages, 
   FileText, 
-  LayoutDashboard, 
   LayoutGrid,
   Users, 
   CheckSquare, 
@@ -25,15 +24,16 @@ import {
   Zap,
   Image as ImageIcon,
   Layers,
-  User,
   Timer,
   Brain,
   Calendar,
   Coffee,
-  Lightbulb
+  Lightbulb,
+  Globe
 } from 'lucide-react';
 import { BotType, UserStats } from './types';
 import { BotCard } from './components/BotCard';
+import { translations, Language } from './utils/translations';
 
 // Bots
 import DoubtBuster from './components/bots/DoubtBuster';
@@ -76,6 +76,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>(View.Home);
   const [activeBot, setActiveBot] = useState<BotType | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [language, setLanguage] = useState<Language>('en');
   
   // Gamification State
   const [userStats, setUserStats] = useState<UserStats>({
@@ -84,6 +85,11 @@ const App: React.FC = () => {
     badges: ['Novice Learner']
   });
   const [xpNotification, setXpNotification] = useState<string | null>(null);
+
+  // Translation helper
+  const t = (key: string) => {
+    return translations[language][key] || translations['en'][key] || key;
+  };
 
   // Toggle dark mode class on html element
   useEffect(() => {
@@ -149,16 +155,16 @@ const App: React.FC = () => {
       <div className="bg-gradient-to-r from-indigo-900/90 to-purple-900/90 dark:from-indigo-900/50 dark:to-purple-900/50 rounded-3xl p-8 md:p-12 border border-indigo-500/20 relative overflow-hidden shadow-2xl">
         <div className="relative z-10">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
-            Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">{currentUser?.name.split(' ')[0]}</span>
+            {t('home.welcome')} <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">{currentUser?.name.split(' ')[0]}</span>
           </h1>
           <p className="text-lg text-indigo-100 max-w-xl mb-8 leading-relaxed">
-            Ready to learn something new today? Your personal AI dashboard is ready.
+            {t('home.subtitle')}
           </p>
           <button 
             onClick={() => setCurrentView(View.BotsList)}
             className="group bg-white text-indigo-900 px-8 py-4 rounded-xl font-bold hover:bg-indigo-50 transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
           >
-            Explore AI Tools
+            {t('home.explore')}
             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
@@ -176,7 +182,7 @@ const App: React.FC = () => {
               <CheckSquare className="text-emerald-500" size={24} />
             </div>
           </div>
-          <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">My Tasks</h3>
+          <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">{t('nav.tasks')}</h3>
           <p className="dark:text-slate-400 text-slate-500 text-sm">Stay organized. Check your pending assignments and deadlines.</p>
         </div>
 
@@ -190,7 +196,7 @@ const App: React.FC = () => {
               <Users className="text-indigo-500" size={24} />
             </div>
           </div>
-          <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">Study Groups</h3>
+          <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">{t('nav.groups')}</h3>
           <p className="dark:text-slate-400 text-slate-500 text-sm">Connect with peers. Join the discussion in your class group.</p>
         </div>
 
@@ -205,8 +211,8 @@ const App: React.FC = () => {
             </div>
             <span className="bg-cyan-500/10 text-cyan-500 text-xs font-bold px-2 py-1 rounded-full border border-cyan-500/20">Featured</span>
           </div>
-          <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">DoubtBuster</h3>
-          <p className="dark:text-slate-400 text-slate-500 text-sm">Need help? Ask our AI tutor for instant, detailed explanations.</p>
+          <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">{t('bot.doubtbuster')}</h3>
+          <p className="dark:text-slate-400 text-slate-500 text-sm">{t('bot.doubtbuster.desc')}</p>
         </div>
       </div>
 
@@ -214,7 +220,7 @@ const App: React.FC = () => {
       <div className="pt-4">
         <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-6 flex items-center gap-2">
             <Lightbulb className="text-yellow-500" fill="currentColor" />
-            Study Smarter Tips
+            {t('home.tips')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             
@@ -273,7 +279,7 @@ const App: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold dark:text-white text-slate-900 mb-2 flex items-center gap-3">
              <BrainCircuit className="text-purple-500" />
-             AI Tools Directory
+             {t('nav.tools')}
           </h1>
           <p className="dark:text-slate-400 text-slate-500 max-w-2xl">
             Select a specialized AI agent to supercharge your learning and productivity.
@@ -284,40 +290,40 @@ const App: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <BotCard 
           id={BotType.DoubtBuster}
-          title="DoubtBuster"
-          description="Your friendly AI tutor. Ask detailed questions and get step-by-step explanations."
+          title={t('bot.doubtbuster')}
+          description={t('bot.doubtbuster.desc')}
           icon={MessagesSquare}
           color="green"
           onClick={() => { setActiveBot(BotType.DoubtBuster); setCurrentView(View.BotActive); }}
         />
         <BotCard 
           id={BotType.DocuMind}
-          title="DocuMind"
-          description="Upload PDFs or images and ask the AI to analyze content or summarize findings."
+          title={t('bot.documind')}
+          description={t('bot.documind.desc')}
           icon={FileSearch}
           color="blue"
           onClick={() => { setActiveBot(BotType.DocuMind); setCurrentView(View.BotActive); }}
         />
         <BotCard 
           id={BotType.PixelCanvas}
-          title="PixelCanvas"
-          description="Generate educational diagrams, historical scenes, or scientific illustrations."
+          title={t('bot.pixelcanvas')}
+          description={t('bot.pixelcanvas.desc')}
           icon={ImageIcon}
           color="pink"
           onClick={() => { setActiveBot(BotType.PixelCanvas); setCurrentView(View.BotActive); }}
         />
         <BotCard 
           id={BotType.FlashMind}
-          title="FlashMind"
-          description="Create AI-powered flashcard sets for active recall on any study topic."
+          title={t('bot.flashmind')}
+          description={t('bot.flashmind.desc')}
           icon={Layers}
           color="teal"
           onClick={() => { setActiveBot(BotType.FlashMind); setCurrentView(View.BotActive); }}
         />
         <BotCard 
           id={BotType.QuizAce}
-          title="QuizAce"
-          description="Test your knowledge with AI-generated interactive quizzes on any topic."
+          title={t('bot.quizace')}
+          description={t('bot.quizace.desc')}
           icon={BrainCircuit}
           color="purple"
           onClick={() => { setActiveBot(BotType.QuizAce); setCurrentView(View.BotActive); }}
@@ -361,7 +367,7 @@ const App: React.FC = () => {
   const renderContactUs = () => (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <h1 className="text-3xl font-bold dark:text-white text-slate-900 mb-4">Get in Touch</h1>
+        <h1 className="text-3xl font-bold dark:text-white text-slate-900 mb-4">{t('nav.contact')}</h1>
         <p className="dark:text-slate-400 text-slate-500 text-lg">
           Have questions about MindSpark? We're here to help. Send us a message and we'll respond as soon as possible.
         </p>
@@ -416,7 +422,7 @@ const App: React.FC = () => {
                 <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <label className="text-sm font-medium dark:text-slate-300 text-slate-700">First Name</label>
+                            <label className="text-sm font-medium dark:text-slate-300 text-slate-700">{t('auth.name')}</label>
                             <input type="text" className="w-full dark:bg-slate-900 bg-slate-50 border dark:border-slate-700 border-slate-300 rounded-lg px-4 py-3 dark:text-white text-slate-900 focus:ring-2 focus:ring-cyan-500 outline-none transition-all" placeholder="John" />
                         </div>
                         <div className="space-y-2">
@@ -453,13 +459,20 @@ const App: React.FC = () => {
         onGetStarted={() => setShowLanding(false)} 
         isDarkMode={isDarkMode} 
         toggleTheme={() => setIsDarkMode(!isDarkMode)} 
+        language={language}
+        setLanguage={setLanguage}
       />
     );
   }
 
   if (!isAuthenticated) {
     return (
-        <AuthPage onLogin={handleLogin} isDarkMode={isDarkMode} />
+        <AuthPage 
+          onLogin={handleLogin} 
+          isDarkMode={isDarkMode} 
+          language={language}
+          setLanguage={setLanguage}
+        />
     );
   }
 
@@ -470,7 +483,7 @@ const App: React.FC = () => {
       <aside className="w-20 md:w-64 flex-shrink-0 dark:bg-slate-900 bg-white border-r dark:border-slate-800 border-slate-200 flex flex-col transition-all duration-300">
         <div className="p-6 flex items-center gap-3 justify-center md:justify-start border-b dark:border-slate-800 border-slate-200">
           <Sparkles className="text-cyan-400 w-8 h-8" />
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 hidden md:block">MindSpark</span>
+          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-500 hidden md:block">{t('app.name')}</span>
         </div>
         
         {/* User Stats / Gamification */}
@@ -508,7 +521,7 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${currentView === View.Home ? 'bg-cyan-600/10 text-cyan-600 dark:bg-cyan-600/20 dark:text-cyan-400' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'}`}
           >
             <Home size={22} />
-            <span className="hidden md:block font-medium">Home</span>
+            <span className="hidden md:block font-medium">{t('nav.home')}</span>
           </button>
 
           <button 
@@ -516,7 +529,7 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${currentView === View.BotsList || currentView === View.BotActive ? 'bg-purple-600/10 text-purple-600 dark:bg-purple-600/20 dark:text-purple-400' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'}`}
           >
             <LayoutGrid size={22} />
-            <span className="hidden md:block font-medium">AI Tools</span>
+            <span className="hidden md:block font-medium">{t('nav.tools')}</span>
           </button>
           
           <button 
@@ -524,7 +537,7 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${currentView === View.StudyNexus ? 'bg-indigo-600/10 text-indigo-600 dark:bg-indigo-600/20 dark:text-indigo-400' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'}`}
           >
             <Users size={22} />
-            <span className="hidden md:block font-medium">StudyNexus</span>
+            <span className="hidden md:block font-medium">{t('nav.groups')}</span>
           </button>
 
           <button 
@@ -532,7 +545,7 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${currentView === View.TaskMaster ? 'bg-emerald-600/10 text-emerald-600 dark:bg-emerald-600/20 dark:text-emerald-400' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'}`}
           >
             <CheckSquare size={22} />
-            <span className="hidden md:block font-medium">Task Master</span>
+            <span className="hidden md:block font-medium">{t('nav.tasks')}</span>
           </button>
 
           <button 
@@ -540,24 +553,44 @@ const App: React.FC = () => {
             className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${currentView === View.ContactUs ? 'bg-blue-600/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400' : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'}`}
           >
             <Mail size={22} />
-            <span className="hidden md:block font-medium">Contact Us</span>
+            <span className="hidden md:block font-medium">{t('nav.contact')}</span>
           </button>
         </nav>
 
         <div className="p-4 border-t dark:border-slate-800 border-slate-200 space-y-2">
+            <div className="relative group">
+                <button 
+                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-pointer transition-colors"
+                >
+                    <Globe size={20} />
+                    <span className="hidden md:block font-medium uppercase">{language}</span>
+                    <select 
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value as Language)}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    >
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="hi">Hindi</option>
+                        <option value="zh">Chinese</option>
+                    </select>
+                </button>
+            </div>
+            
             <button 
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-pointer transition-colors"
             >
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-                <span className="hidden md:block font-medium">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+                <span className="hidden md:block font-medium">{isDarkMode ? t('nav.mode.light') : t('nav.mode.dark')}</span>
             </button>
             <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-pointer transition-colors"
             >
                 <LogOut size={20} />
-                <span className="hidden md:block font-medium">Log Out</span>
+                <span className="hidden md:block font-medium">{t('nav.logout')}</span>
             </button>
         </div>
       </aside>

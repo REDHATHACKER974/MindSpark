@@ -1,12 +1,16 @@
+
 import React, { useState } from 'react';
-import { Mail, Lock, User, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, Sparkles, Globe } from 'lucide-react';
+import { translations, Language } from '../utils/translations';
 
 interface AuthPageProps {
   onLogin: (user: { name: string; email: string }) => void;
   isDarkMode: boolean;
+  language: Language;
+  setLanguage: (lang: Language) => void;
 }
 
-export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
+export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode, language, setLanguage }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   
@@ -14,6 +18,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+
+  const t = (key: string) => translations[language][key] || translations['en'][key] || key;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,13 +49,32 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
         <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 animate-pulse"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 animate-pulse" style={{ animationDelay: '1s' }}></div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 flex justify-between items-start">
           <div className="flex items-center gap-3 mb-8">
             <div className="bg-white/10 p-2 rounded-lg backdrop-blur-sm">
                 <Sparkles className="text-cyan-400" size={28} />
             </div>
-            <span className="text-3xl font-bold tracking-tight">MindSpark</span>
+            <span className="text-3xl font-bold tracking-tight">{t('app.name')}</span>
           </div>
+
+          {/* Language Selector */}
+          <div className="relative">
+                <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-white flex items-center gap-1">
+                    <Globe size={20} />
+                    <span className="text-sm font-medium uppercase">{language}</span>
+                </button>
+                <select 
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as Language)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                >
+                    <option value="en" className="text-slate-900">English</option>
+                    <option value="es" className="text-slate-900">Español</option>
+                    <option value="fr" className="text-slate-900">Français</option>
+                    <option value="hi" className="text-slate-900">Hindi</option>
+                    <option value="zh" className="text-slate-900">Chinese</option>
+                </select>
+            </div>
         </div>
 
         <div className="relative z-10 max-w-lg">
@@ -85,10 +110,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
           
           <div className="text-center lg:text-left">
             <h2 className="text-3xl font-bold dark:text-white text-slate-900 mb-2">
-              {isLogin ? 'Welcome back' : 'Create an account'}
+              {isLogin ? t('auth.welcome') : t('auth.create')}
             </h2>
             <p className="dark:text-slate-400 text-slate-500">
-              {isLogin ? 'Enter your credentials to access your workspace.' : 'Sign up for a free account today.'}
+              {isLogin ? t('auth.signin_desc') : t('auth.signup_desc')}
             </p>
           </div>
 
@@ -98,7 +123,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
                 {!isLogin && (
                     <div className="space-y-1">
-                        <label className="text-sm font-medium dark:text-slate-300 text-slate-700 ml-1">Full Name</label>
+                        <label className="text-sm font-medium dark:text-slate-300 text-slate-700 ml-1">{t('auth.name')}</label>
                         <div className="relative">
                             <User className="absolute left-4 top-3.5 text-slate-400" size={20} />
                             <input 
@@ -114,7 +139,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
                 )}
 
                 <div className="space-y-1">
-                    <label className="text-sm font-medium dark:text-slate-300 text-slate-700 ml-1">Email / Username</label>
+                    <label className="text-sm font-medium dark:text-slate-300 text-slate-700 ml-1">{t('auth.email')}</label>
                     <div className="relative">
                         <Mail className="absolute left-4 top-3.5 text-slate-400" size={20} />
                         <input 
@@ -129,7 +154,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-sm font-medium dark:text-slate-300 text-slate-700 ml-1">Password</label>
+                    <label className="text-sm font-medium dark:text-slate-300 text-slate-700 ml-1">{t('auth.password')}</label>
                     <div className="relative">
                         <Lock className="absolute left-4 top-3.5 text-slate-400" size={20} />
                         <input 
@@ -145,7 +170,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
 
                 {isLogin && (
                     <div className="flex justify-end">
-                        <button type="button" className="text-sm font-medium text-indigo-500 hover:text-indigo-400">Forgot password?</button>
+                        <button type="button" className="text-sm font-medium text-indigo-500 hover:text-indigo-400">{t('auth.forgot')}</button>
                     </div>
                 )}
 
@@ -156,7 +181,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
                 >
                     {loading ? <Loader2 size={24} className="animate-spin" /> : (
                         <>
-                            <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
+                            <span>{isLogin ? t('auth.signin_btn') : t('auth.signup_btn')}</span>
                             <ArrowRight size={20} />
                         </>
                     )}
@@ -166,7 +191,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLogin, isDarkMode }) => {
 
           <div className="text-center">
             <p className="text-sm dark:text-slate-400 text-slate-500">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                {isLogin ? t('auth.no_account') + " " : t('auth.has_account') + " "}
                 <button 
                     onClick={() => { setIsLogin(!isLogin); setEmail(''); setPassword(''); setName(''); }}
                     className="font-bold text-indigo-500 hover:text-indigo-400 transition-colors"

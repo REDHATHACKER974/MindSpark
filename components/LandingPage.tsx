@@ -13,14 +13,19 @@ import {
   Layers,
   Image as ImageIcon
 } from 'lucide-react';
+import { translations, Language } from '../utils/translations';
 
 interface LandingPageProps {
   onGetStarted: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMode, toggleTheme }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMode, toggleTheme, language, setLanguage }) => {
+  const t = (key: string) => translations[language][key] || translations['en'][key] || key;
+
   return (
     <div className="min-h-screen w-full dark:bg-slate-950 bg-slate-50 dark:text-slate-200 text-slate-800 font-sans selection:bg-cyan-500/30 overflow-x-hidden">
       
@@ -32,11 +37,30 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMo
                 <Sparkles size={24} fill="currentColor" />
             </div>
             <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-purple-600">
-              MindSpark
+              {t('app.name')}
             </span>
           </div>
           
           <div className="flex items-center gap-4">
+             {/* Language Dropdown */}
+            <div className="relative">
+                <button className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                    <Globe size={20} />
+                    <span className="text-sm font-medium uppercase">{language}</span>
+                </button>
+                <select 
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as Language)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                >
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="hi">Hindi</option>
+                    <option value="zh">Chinese</option>
+                </select>
+            </div>
+
             <button 
               onClick={toggleTheme}
               className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400"
@@ -47,7 +71,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMo
               onClick={onGetStarted}
               className="hidden md:flex bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-2.5 rounded-full font-bold hover:opacity-90 transition-all transform hover:scale-105"
             >
-              Launch App
+              {t('landing.login')}
             </button>
           </div>
         </div>
@@ -67,13 +91,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMo
           </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
-            The Intelligent Ecosystem <br className="hidden md:block" />
-            for the <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600">Modern Learner</span>
+            {t('landing.hero.title')}
           </h1>
           
           <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-            MindSpark bridges the gap between solitary AI assistance and structured productivity. 
-            Master concepts, visualize data, and collaborate with peers in one unified dashboard.
+            {t('landing.hero.subtitle')}
           </p>
 
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-10 duration-700 delay-300">
@@ -81,7 +103,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMo
               onClick={onGetStarted}
               className="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-cyan-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 text-white rounded-xl font-bold text-lg shadow-xl shadow-purple-500/20 transition-all transform hover:scale-105 flex items-center justify-center gap-2"
             >
-              Get Started for Free
+              {t('landing.get_started')}
               <ArrowRight size={20} />
             </button>
             <button className="w-full md:w-auto px-8 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2">
@@ -95,34 +117,34 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMo
       <section className="py-24 bg-slate-50 dark:bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything you need to excel</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('landing.features')}</h2>
             <p className="text-slate-500 dark:text-slate-400 text-lg">Powerful tools powered by Google Gemini 2.5</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <FeatureCard 
               icon={<BrainCircuit className="text-purple-500" size={32} />}
-              title="DoubtBuster"
-              description="Your personal Socratic tutor. It doesn't just give answers; it breaks down complex problems into understandable steps."
+              title={t('bot.doubtbuster')}
+              description={t('bot.doubtbuster.desc')}
             />
             <FeatureCard 
               icon={<ImageIcon className="text-pink-500" size={32} />}
-              title="PixelCanvas"
-              description="Visual learners rejoice. Generate educational diagrams, historical scenes, and scientific illustrations on demand."
+              title={t('bot.pixelcanvas')}
+              description={t('bot.pixelcanvas.desc')}
             />
             <FeatureCard 
               icon={<Layers className="text-teal-500" size={32} />}
-              title="FlashMind"
-              description="Active recall made easy. Automatically generate flashcard sets from any topic and test yourself instantly."
+              title={t('bot.flashmind')}
+              description={t('bot.flashmind.desc')}
             />
             <FeatureCard 
               icon={<Users className="text-indigo-500" size={32} />}
-              title="StudyNexus"
+              title={t('nav.groups')}
               description="Don't study alone. Join grade-specific groups, chat with peers, and collaborate on a real-time whiteboard."
             />
             <FeatureCard 
               icon={<CheckSquare className="text-emerald-500" size={32} />}
-              title="TaskMaster"
+              title={t('nav.tasks')}
               description="Stay on top of assignments with a category-based task manager featuring a built-in Pomodoro focus timer."
             />
             <FeatureCard 
@@ -156,7 +178,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, isDarkMo
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
             <Sparkles className="text-purple-500" size={20} />
-            <span className="font-bold text-lg dark:text-white text-slate-900">MindSpark</span>
+            <span className="font-bold text-lg dark:text-white text-slate-900">{t('app.name')}</span>
           </div>
           <div className="flex gap-8 text-sm text-slate-500">
             <a href="#" className="hover:text-purple-500 transition-colors">Privacy Policy</a>
