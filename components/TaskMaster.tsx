@@ -95,6 +95,11 @@ const TaskMaster: React.FC<GamificationProps> = ({ onReward }) => {
 
   const filteredTasks = tasks.filter(t => filter === 'All' ? true : t.category === filter);
 
+  const getCategoryCount = (cat: TaskCategory | 'All') => {
+    if (cat === 'All') return tasks.length;
+    return tasks.filter(t => t.category === cat).length;
+  };
+
   // Simple Calendar Logic
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay();
@@ -117,17 +122,17 @@ const TaskMaster: React.FC<GamificationProps> = ({ onReward }) => {
           <Filter size={16} className="text-slate-400 mr-1 flex-shrink-0" />
           <button
             onClick={() => setFilter('All')}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${filter === 'All' ? 'bg-slate-800 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'}`}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1 ${filter === 'All' ? 'bg-slate-800 text-white dark:bg-white dark:text-slate-900' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'}`}
           >
-            All
+            All <span className="opacity-60 text-[10px] bg-black/10 dark:bg-black/20 px-1.5 rounded-full">{getCategoryCount('All')}</span>
           </button>
           {CATEGORIES.map(cat => (
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap border ${filter === cat ? CATEGORY_COLORS[cat] : 'border-transparent bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'}`}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap border flex items-center gap-1 ${filter === cat ? CATEGORY_COLORS[cat] : 'border-transparent bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'}`}
             >
-              {cat}
+              {cat} <span className="opacity-60 text-[10px] bg-black/5 dark:bg-white/10 px-1.5 rounded-full">{getCategoryCount(cat)}</span>
             </button>
           ))}
         </div>
