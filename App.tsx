@@ -25,7 +25,12 @@ import {
   Zap,
   Image as ImageIcon,
   Layers,
-  User
+  User,
+  Timer,
+  Brain,
+  Calendar,
+  Coffee,
+  Lightbulb
 } from 'lucide-react';
 import { BotType, UserStats } from './types';
 import { BotCard } from './components/BotCard';
@@ -202,6 +207,61 @@ const App: React.FC = () => {
           </div>
           <h3 className="text-xl font-bold dark:text-white text-slate-900 mb-2">DoubtBuster</h3>
           <p className="dark:text-slate-400 text-slate-500 text-sm">Need help? Ask our AI tutor for instant, detailed explanations.</p>
+        </div>
+      </div>
+
+      {/* Study Tips Section */}
+      <div className="pt-4">
+        <h2 className="text-2xl font-bold dark:text-white text-slate-900 mb-6 flex items-center gap-2">
+            <Lightbulb className="text-yellow-500" fill="currentColor" />
+            Study Smarter Tips
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            {/* Tip 1: Pomodoro */}
+            <div className="dark:bg-slate-800 bg-white p-5 rounded-xl border dark:border-slate-700 border-slate-200 hover:border-red-500/30 transition-all hover:-translate-y-1">
+                <div className="mb-3 p-2 bg-red-100 dark:bg-red-900/30 w-fit rounded-lg text-red-600 dark:text-red-400">
+                    <Timer size={20} />
+                </div>
+                <h4 className="font-bold dark:text-white text-slate-900 mb-2">The Pomodoro Method</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Set a timer for 25 minutes of focus, followed by a 5-minute break. Use the "Focus Flow" in TaskMaster to get started!
+                </p>
+            </div>
+
+            {/* Tip 2: Active Recall */}
+            <div className="dark:bg-slate-800 bg-white p-5 rounded-xl border dark:border-slate-700 border-slate-200 hover:border-teal-500/30 transition-all hover:-translate-y-1">
+                <div className="mb-3 p-2 bg-teal-100 dark:bg-teal-900/30 w-fit rounded-lg text-teal-600 dark:text-teal-400">
+                    <Brain size={20} />
+                </div>
+                <h4 className="font-bold dark:text-white text-slate-900 mb-2">Active Recall</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Don't just re-read. Test yourself. Generate quizzes with QuizAce or Flashcards with FlashMind to strengthen memory pathways.
+                </p>
+            </div>
+
+            {/* Tip 3: Spaced Repetition */}
+            <div className="dark:bg-slate-800 bg-white p-5 rounded-xl border dark:border-slate-700 border-slate-200 hover:border-purple-500/30 transition-all hover:-translate-y-1">
+                <div className="mb-3 p-2 bg-purple-100 dark:bg-purple-900/30 w-fit rounded-lg text-purple-600 dark:text-purple-400">
+                    <Calendar size={20} />
+                </div>
+                <h4 className="font-bold dark:text-white text-slate-900 mb-2">Spaced Repetition</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Review material at increasing intervals (1 day, 3 days, 1 week). This combats the "Forgetting Curve" effectively.
+                </p>
+            </div>
+
+            {/* Tip 4: Wellbeing */}
+            <div className="dark:bg-slate-800 bg-white p-5 rounded-xl border dark:border-slate-700 border-slate-200 hover:border-orange-500/30 transition-all hover:-translate-y-1">
+                <div className="mb-3 p-2 bg-orange-100 dark:bg-orange-900/30 w-fit rounded-lg text-orange-600 dark:text-orange-400">
+                    <Coffee size={20} />
+                </div>
+                <h4 className="font-bold dark:text-white text-slate-900 mb-2">Rest & Hydration</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Your brain consumes 20% of your energy. Drink water and sleep 8 hours to consolidate what you've learned today.
+                </p>
+            </div>
+
         </div>
       </div>
     </div>

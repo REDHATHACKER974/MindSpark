@@ -43,7 +43,17 @@ const StudyNexus: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'chat' | 'board'>('chat');
   
   // Data Storage (Per Group)
-  const [groupChats, setGroupChats] = useState<Record<string, ChatMessage[]>>(INITIAL_CHATS);
+  // Initialize from localStorage if available
+  const [groupChats, setGroupChats] = useState<Record<string, ChatMessage[]>>(() => {
+    try {
+      const saved = localStorage.getItem('mindspark_group_chats');
+      return saved ? JSON.parse(saved) : INITIAL_CHATS;
+    } catch (error) {
+      console.error("Failed to load chats from storage:", error);
+      return INITIAL_CHATS;
+    }
+  });
+
   const [groupDrawings, setGroupDrawings] = useState<Record<string, string>>({}); // Stores dataURL per group ID
   
   // Local UI State
@@ -54,6 +64,15 @@ const StudyNexus: React.FC = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
   const [color, setColor] = useState('#4f46e5');
+
+  // Persistence Effect: Save chats whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('mindspark_group_chats', JSON.stringify(groupChats));
+    } catch (error) {
+      console.error("Failed to save chats to storage:", error);
+    }
+  }, [groupChats]);
 
   // --- Chat Logic ---
   const currentMessages = selectedGroup ? (groupChats[selectedGroup.id] || []) : [];
