@@ -24,7 +24,8 @@ import {
   Trophy,
   Zap,
   Image as ImageIcon,
-  Layers
+  Layers,
+  User
 } from 'lucide-react';
 import { BotType, UserStats } from './types';
 import { BotCard } from './components/BotCard';
@@ -44,6 +45,10 @@ import FlashMind from './components/bots/FlashMind';
 import StudyNexus from './components/StudyNexus';
 import TaskMaster from './components/TaskMaster';
 
+// Pages
+import { LandingPage } from './components/LandingPage';
+import { AuthPage } from './components/AuthPage';
+
 enum View {
   Home = 'home',
   BotsList = 'bots-list',
@@ -53,7 +58,16 @@ enum View {
   ContactUs = 'contact-us',
 }
 
+interface UserProfile {
+  name: string;
+  email: string;
+}
+
 const App: React.FC = () => {
+  const [showLanding, setShowLanding] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+
   const [currentView, setCurrentView] = useState<View>(View.Home);
   const [activeBot, setActiveBot] = useState<BotType | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -74,6 +88,21 @@ const App: React.FC = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  // Auth Handlers
+  const handleLogin = (user: UserProfile) => {
+    setCurrentUser(user);
+    setIsAuthenticated(true);
+    // Reset view to Home when logging in
+    setCurrentView(View.Home);
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    setShowLanding(true);
+    setCurrentView(View.Home);
+  };
 
   // Gamification Logic
   const handleReward = (amount: number, message: string) => {
@@ -115,10 +144,10 @@ const App: React.FC = () => {
       <div className="bg-gradient-to-r from-indigo-900/90 to-purple-900/90 dark:from-indigo-900/50 dark:to-purple-900/50 rounded-3xl p-8 md:p-12 border border-indigo-500/20 relative overflow-hidden shadow-2xl">
         <div className="relative z-10">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-6">
-            Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">MindSpark</span>
+            Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">{currentUser?.name.split(' ')[0]}</span>
           </h1>
           <p className="text-lg text-indigo-100 max-w-xl mb-8 leading-relaxed">
-            Your personal AI-powered learning hub. Boost your productivity, collaborate with peers, and master new subjects with advanced AI tools.
+            Ready to learn something new today? Your personal AI dashboard is ready.
           </p>
           <button 
             onClick={() => setCurrentView(View.BotsList)}
@@ -356,6 +385,25 @@ const App: React.FC = () => {
     </div>
   );
 
+  // VIEW CONTROL
+
+  if (showLanding) {
+    return (
+      <LandingPage 
+        onGetStarted={() => setShowLanding(false)} 
+        isDarkMode={isDarkMode} 
+        toggleTheme={() => setIsDarkMode(!isDarkMode)} 
+      />
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+        <AuthPage onLogin={handleLogin} isDarkMode={isDarkMode} />
+    );
+  }
+
+  // MAIN APP
   return (
     <div className="flex h-screen w-full dark:bg-slate-950 bg-slate-50 dark:text-slate-200 text-slate-800 font-sans overflow-hidden selection:bg-cyan-500/30">
       {/* Sidebar */}
@@ -371,6 +419,15 @@ const App: React.FC = () => {
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Profile</span>
                     <span className="text-xs font-bold text-yellow-500 flex items-center gap-1"><Trophy size={12}/> Level {userStats.level}</span>
+                </div>
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-xs">
+                        {currentUser?.name.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold dark:text-white text-slate-900 truncate">{currentUser?.name}</p>
+                        <p className="text-xs text-slate-500 truncate">{currentUser?.email}</p>
+                    </div>
                 </div>
                 <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden mb-2">
                     <div 
@@ -435,10 +492,13 @@ const App: React.FC = () => {
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
                 <span className="hidden md:block font-medium">{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
-            <div className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-pointer transition-colors">
+            <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-pointer transition-colors"
+            >
                 <LogOut size={20} />
                 <span className="hidden md:block font-medium">Log Out</span>
-            </div>
+            </button>
         </div>
       </aside>
 
