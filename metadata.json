@@ -1,0 +1,7 @@
+{
+  "name": "MindSpark",
+  "description": "The future of learning and productivity. AI-powered chatbots for doubts, quizzes, diagrams, speech, translation, reports, and document analysis, combined with study groups and task management.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
