@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { generateQuiz } from '../../services/geminiService';
 import { Quiz, GamificationProps } from '../../types';
@@ -109,12 +110,12 @@ const QuizAce: React.FC<GamificationProps> = ({ onReward }) => {
     return (
       <div className="flex flex-col items-center justify-center h-full dark:bg-slate-900 bg-white rounded-lg border dark:border-slate-700 border-slate-200 p-8">
         <h2 className="text-3xl font-bold dark:text-white text-slate-900 mb-2">Quiz Completed!</h2>
-        <p className="dark:text-slate-400 text-slate-500 mb-8">You scored {score} out of {quiz?.questions.length}</p>
+        <p className="dark:text-slate-400 text-slate-500 mb-8">You scored {score} out of {quiz?.questions?.length || 0}</p>
         <div className="text-6xl font-bold text-purple-500 mb-8">
-          {Math.round((score / (quiz?.questions.length || 1)) * 100)}%
+          {Math.round((score / (quiz?.questions?.length || 1)) * 100)}%
         </div>
         <button 
-          onClick={() => setQuiz(null)}
+          onClick={() => { setQuiz(null); setQuizFinished(false); }}
           className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
         >
           Create New Quiz
